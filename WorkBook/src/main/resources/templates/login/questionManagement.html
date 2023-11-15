@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div th:fragment="questionManagement_contents">
+			<div class="page-header">
+				<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/admin'">
+					戻る
+				</button>
+				<h1>問題一覧</h1>
+			</div>
+			<table class="table table-bordered table-hover table-striped">
+				<tr>
+					<th class="info col-sm-2">問題ID</th>
+					<th class="info col-sm-2">カテゴリ</th>
+					<th class="info col-sm-2">問題文</th>
+					<th class="info col-sm-2">選択肢１</th>
+					<th class="info col-sm-2">選択肢２</th>
+					<th class="info col-sm-2">選択肢３</th>
+					<th class="info col-sm-2">選択肢４</th>
+					<th class="info col-sm-2">答え</th>
+					<th class="info col-sm-2">解説</th>
+					<th class="info col-sm-2">解答済み</th>
+					<th class="info col-sm-2">結果</th>
+				</tr>
+				<tr th:each="question:${questionManagement}">
+					<td th:text="${question.questionId}"></td>
+					<td th:text="${question.category}"></td>
+					<td th:text="${question.questionStatement}"></td>
+					<td th:text="${question.choice1}"></td>
+					<td th:text="${question.choice2}"></td>
+					<td th:text="${question.choice3}"></td>
+					<td th:text="${question.choice4}"></td>
+					<td th:text="${question.answer}"></td>
+					<td th:text="${question.explanation}"></td>
+					<td th:text="${question.answered}"></td>
+					<td th:text="${question.result}"></td>
+					<td>
+						<a class="btn btn-primary" th:href="@{'/questionDetail/'+${question.questionId}}">
+							詳細
+						</a>
+					</td>
+				</tr>
+			</table>
+			<label th:text="'合計: '+${questionManagementCount}+'件'"></label><br/>
+			<label class="text-info" th:text="${result}">結果表示</label><br/>
+			<a class="btn btn-primary" th:href="@{'/questionManagement/csv'}">CSV出力</a>
+			<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/admin'">
+				戻る
+			</button>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"></meta>
+		<!-- Bootstrapの設定 -->
+		<link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"rel="stylesheet">
+		<script th:src="@{/webjars/jquery/jquery.min.js}" defer></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" defer></script>
+		<title>問題登録画面</title>
+	</head>
+	<body>
+		<div th:fragment="question_creation_contents">
+			<div class="col-sm-5">
+				<div class="page-header">
+					<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/admin'">
+						戻る
+					</button>
+					<h1>問題登録画面</h1>
+				</div>
+				<form method="post" action="/questionCreation" th:object="${questionCreationForm}">
+					<table class="table table-brodered table-hover">
+						<!--カデコリの入力エリア -->	
+						<tr>
+							<th class="action col-sm-2">カテゴリ</th>
+							<td class="col-sm-3">
+								<div class="form-group">
+									<select class="list-group" name="category">
+										<option th:each="category : ${categoryList}" class="list-group-category">
+											<span th:text="${category}"></span>
+										</option>
+									</select>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('category')}"
+										th:errors="*{category}">
+										category error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!--問題文の入力エリア -->	
+						<tr>
+							<th class="active">問題文</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('questionStatement')}?'has-error'">
+									<textarea class="form-control" rows="5" th:field="*{questionStatement}"></textarea>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('questionStatement')}"
+										th:errors="*{questionStatement}">
+										questionStatement error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!--選択肢１の入力エリア -->	
+						<tr>
+							<th class="active">選択肢１</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('choice1')}?'has-error'">
+									<input type="text" class="form-control"
+										th:field="*{choice1}"/>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('choice1')}"
+										th:errors="*{choice1}">
+										choice1 error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!--選択肢２の入力エリア -->
+						<tr>	
+							<th class="active">選択肢２</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('choice2')}?'has-error'">
+									<input type="text" class="form-control"
+										th:field="*{choice2}"/>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('choice2')}"
+										th:errors="*{choice2}">
+										choice2 error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!--選択肢３の入力エリア -->	
+						<tr>
+							<th class="active">選択肢３</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('choice3')}?'has-error'">
+									<input type="text" class="form-control"
+										th:field="*{choice3}"/>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('choice3')}"
+										th:errors="*{choice3}">
+										choice3 error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!--選択肢４の入力エリア -->
+						<tr>	
+							<th class="active">選択肢４</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('choice4')}?'has-error'">
+									<input type="text" class="form-control"
+										th:field="*{choice4}"/>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('choice4')}"
+										th:errors="*{choice4}">
+										choice4 error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!-- 答えの入力エリア -->
+						<tr>
+							<th class="active">答え</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('answer')}?'has-error'">
+									<input type="number" min="1" max="4" class="form-control"
+									th:field="*{answer}" />
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('answer')}"
+										th:errors="*{answer}">
+										answer error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!-- 解説の入力エリア -->
+						<tr>
+							<th class="active">解説</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('explanation')}?'has-error'">
+									<textarea class="form-control" rows="5" th:field="*{explanation}"></textarea>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('explanation')}"
+										th:errors="*{explanation}">
+										explanation error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!-- 解答済みの入力エリア -->
+						<tr>
+							<th class="active">解答済み</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('answered')}?'has-error'">
+									<div>
+										<span th:each="item : ${radioAnswered}">
+											<input type="radio" name="radioAnswered"
+												th:value="${item.value}"
+												th:text="${item.key}"
+												th:field="*{answered}">
+											</input>
+										</span>
+									</div>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('answered')}"
+										th:errors="*{answered}">
+										answered error
+									</span>
+								</div>
+							</td>
+						</tr>
+						<!-- 結果の入力エリア -->
+						<tr>
+							<th class="active">結果</th>
+							<td>
+								<div class="form-group"
+									th:classappend="${#fields.hasErrors('result')}?'has-error'">
+									<div>
+										<span th:each="item : ${radioResult}">
+											<input type="radio" name="radioResult"
+												th:value="${item.value}"
+												th:text="${item.key}"
+												th:field="*{result}">
+											</input>
+										</span>
+									</div>
+									<span class="text-danger"
+										th:if="${#fields.hasErrors('result')}"
+										th:errors="*{result}">
+										result error
+									</span>
+								</div>
+							</td>
+						</tr>
+					</table>
+					<ul>
+						<li th:each="error:${#fields.detailedErrors()}">
+							<span th:text="${error.message}">Error message</span>
+						</li>
+					</ul>
+					<input type="hidden"
+						th:name="${_csrf.parameterName}"
+						th:value="${_csrf.token}"/>
+					<!-- 問題登録ボタン -->
+					<button class="btn btn-primary" type="submit" name="creation">
+						問題登録
+					</button>
+					<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/admin'">
+						戻る
+					</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

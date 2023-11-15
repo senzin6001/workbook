@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"></meta>
+		
+		<!--ポイント１：Bootstrapの設定 -->
+		<link th:href="@{webjars/bootstrap/css/bootstrap.min.css}"rel="stylesheet">
+		<script th:src="@{/webjars/jquery/jquery.min.js}" defer></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" defer></script>
+		
+		<title>Login</title>
+	</head>
+	<body class="text-center">
+		<h1>Login</h1>
+		<form method="post" action="/login">
+			<p th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null"
+				th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"
+				class="text-danger">
+			ログインエラーメッセージ
+			</p>
+			<!-- ユーザーID -->
+			<label>メールアドレス</label>
+			<input type="text" name="email"/><br/>
+			<br/>
+			<!--パスワード -->
+			<label>パスワード</label>
+			<input type="password" name="password"/><br/>
+			<br />
+			<input type="hidden"
+				th:name="${_csrf.parameterName}"
+				th:value="${_csrf.token}"/>
+			<!-- ログインボタン -->
+			<button class="btn btn-primary" type="submit">ログイン</button>
+		</form>
+		<br />
+		<!-- ポイント２:th:href -->
+		<!-- ユーザー登録画面へのリンク -->
+		<a th:href="@{'/signup'}">ユーザー新規登録はこちら</a>
+	</body>
+</html>

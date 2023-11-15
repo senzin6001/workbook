@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"></meta>
+		<!-- Bootstrapの設定 -->
+		<link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"rel="stylesheet">
+		<script th:src="@{/webjars/jquery/jquery.min.js}" defer></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" defer></script>
+		<title>SignUp</title>
+	</head>
+	<body>
+		<div class="col-sm-5">
+			<div class="page-header">
+				<h1>ユーザー登録画面</h1>
+			</div>
+			<form method="post" action="/signup" th:object="${signupForm}">
+				<table class="table table-brodered table-hover">
+					<!-- メールアドレスの入力エリア -->
+					<tr>
+						<th class="action col-sm-3">メールアドレス</th>
+						<td>
+							
+							<div class="form-group"
+								th:classappend="${#fields.hasErrors('email')}?'has-error'">
+								<input type="text" class="form-control"
+									th:field="*{email}" />
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('email')}"
+									th:errors="*{email}">
+									email error
+								</span>
+								<span class="text-danger" th:if="${errorMessage}">
+                					<span th:text="${errorMessage}"></span>
+            					</span>
+							</div>
+						</td>
+					</tr>
+					<!--パスワードの入力エリア -->	
+					<tr>
+						<th class="active">パスワード</th>
+						<td>
+							<div class="form-group"
+								th:classappend="${#fields.hasErrors('password')}?'has-error'">
+								<input type="text" class="form-control"
+									th:field="*{password}"/>
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('password')}"
+									th:errors="*{password}">
+									password error
+								</span>
+							</div>
+						</td>
+					</tr>
+					<!-- ユーザー名の入力エリア -->
+					<tr>
+						<th class="active">ユーザー名</th>
+						<td>
+							<div class="form-group"
+								th:classappend="${#fields.hasErrors('userName')}?'has-error'">
+								<input type="text" class="form-control"
+									th:field="*{userName}" />
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('userName')}"
+									th:errors="*{userName}">
+									userName error
+								</span>
+							</div>
+						</td>
+					</tr>
+					<!--誕生日の入力エリア-->
+					<tr>
+						<th class="active">誕生日</th>
+						<td>
+							<div class="form-group"
+								th:classappend="${#fields.hasErrors('birthday')}?'has-error'">
+								<input type="text" class="form-control" placeholder="yyyy-MM-dd"
+									th:field="*{birthday}"/>
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('birthday')}"
+									th:errors="*{birthday}">
+									birthday error
+								</span>
+							</div>
+						</td>
+					</tr>
+					<!--年齢の入力エリア -->
+					<tr>
+						<th class="active">年齢</th>
+						<td>
+							<div class="from-group"
+								th:classappend="${#fields.hasErrors('age')}?'has-error'">
+								<input type="text" class="form-control"
+									th:field="*{age}"/>
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('age')}"
+									th:errors="*{age}">
+									age error
+								</span>
+							</div>
+						</td>
+					</tr>
+					<!--結婚ステータスの入力エリア -->
+					<tr>
+						<th class="active">結婚</th>
+						<td>
+							<div class="form-group">
+								<!--ラジオボタン-->
+								<div th:each="item:${radioMarriage}">
+									<input type="radio" name="radioMarriage"
+										th:text="${item.key}"
+										th:value="${item.value}"
+										th:field="*{marriage}">
+									</input>
+								</div>
+								<span class="text-danger"
+									th:if="${#fields.hasErrors('marriage')}"
+									th:errors="*{marriage}">
+									marriage error
+								</span>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<ul>
+					<li th:each="error:${#fields.detailedErrors()}">
+						<span th:text="${error.message}">Error message</span>
+					</li>
+					<li th:if="${errorMessage}">
+                		<span th:text="${errorMessage}"></span>
+					</li>
+				</ul>
+				<input type="hidden"
+					th:name="${_csrf.parameterName}"
+					th:value="${_csrf.token}"/>
+				<!-- ユーザー登録ボタン -->
+				<button class="btn btn-primary" type="submit">
+					ユーザー登録
+				</button>
+			</form>
+		</div>
+	</body>
+</html>

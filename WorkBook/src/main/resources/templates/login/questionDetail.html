@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div th:fragment="questionDetail_contents">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="page-header">
+				<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/questionManagement'">
+					戻る
+				</button>
+						<h2>問題詳細</h2>
+					</div>
+					<form method="post" th:action="@{/questionDetail}" th:object="${questionCreationForm}">
+						<table class="table table-bordered table-hover">
+							<tr>
+								<th class="active col-sm-2">問題ID</th>
+								<td class="col-sm-3">
+									<div class="form-group">
+										<input type="text" class="form-control"
+											th:field="*{questionId}"
+											readonly="readonly" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active col-sm-2">カテゴリ</th>
+								<td class="col-sm-3">
+									<div class="form-group">
+										<select class="list-group" name="category">
+											<option th:each="category : ${categoryList}" class="list-group-category">
+												<span th:text="${category}"></span>
+											</option>
+										</select>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('category')}"
+											th:errors="*{category}">
+											category error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">問題文</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('questionStatement')}?'has-error'">
+										<textarea class="form-control" rows="5" th:field="*{questionStatement}"></textarea>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('questionStatement')}"
+											th:errors="*{questionStatement}">
+											questionStatement error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">選択肢１</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('choice1')}?'has-error'">
+										<input type="text" class="form-control"
+											th:field="*{choice1}"/>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('choice1')}"
+											th:errors="*{choice1}">
+											choice1 error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">選択肢２</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('choice2')}?'has-error'">
+										<input type="text" class="form-control"
+											th:field="*{choice2}"/>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('choice2')}"
+											th:errors="*{choice2}">
+											choice2 error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">選択肢３</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('choice3')}?'has-error'">
+										<input type="text" class="form-control"
+											th:field="*{choice3}"/>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('choice3')}"
+											th:errors="*{choice3}">
+											choice3 error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">選択肢４</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('choice4')}?'has-error'">
+										<input type="text" class="form-control"
+											th:field="*{choice4}"/>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('choice4')}"
+											th:errors="*{choice4}">
+											choice4 error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">答え</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('answer')}?'has-error'">
+										<input type="number" min="1" max="4" class="form-control"
+										th:field="*{answer}"/>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('answer')}"
+											th:errors="*{answer}">
+											answer error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">解説</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('explanation')}?'has-error'">
+										<textarea class="form-control" rows="5" th:field="*{explanation}"></textarea>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('explanation')}"
+											th:errors="*{explanation}">
+											explanation error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">解答済み</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('answered')}?'has-error'">
+										<div>
+											<span th:each="item : ${radioAnswered}">
+												<input type="radio" name="radioAnswered"
+													th:value="${item.value}"
+													th:text="${item.key}"
+													th:field="*{answered}">
+												</input>
+											</span>
+										</div>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('answered')}"
+											th:errors="*{answered}">
+											answered error
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">結果</th>
+								<td>
+									<div class="form-group"
+										th:classappend="${#fields.hasErrors('result')}?'has-error'">
+										<div>
+											<span th:each="item : ${radioResult}">
+												<input type="radio" name="radioResult"
+													th:value="${item.value}"
+													th:text="${item.key}"
+													th:field="*{result}">
+												</input>
+											</span>
+										</div>
+										<span class="text-danger"
+											th:if="${#fields.hasErrors('result')}"
+											th:errors="*{result}">
+											result error
+										</span>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<button class="btn btn-primary btn-lb pull-right"
+							type="submit"
+							name="update">
+							更新
+						</button>
+						<button class="btn btn-danger btn-lg" type="submit" name="delete">
+							削除
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>	
+	</body>
+</html>
