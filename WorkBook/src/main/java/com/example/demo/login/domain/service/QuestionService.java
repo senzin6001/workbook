@@ -5,6 +5,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +76,39 @@ public class QuestionService{
 	
 	public List<String> groupByCategory(){
 		return dao.groupByCategory();
-	}	
+	}
+	
+	public List<Question> getSelectCategoryList(List<String> selectedCategories){
+		return dao.selectCategoryList(selectedCategories);
+	}
+	
+	public List<Question> getRandomQuestions(List<Question> questionList,int count){
+		List<Question> shuffledList = shuffleList(questionList);
+		return extractQuestions(shuffledList, count);
+	}
+	
+
+	
+    private List<Question> shuffleList(List<Question> questionList) {
+        List<Question> shuffledList = new ArrayList<>(questionList);
+        Collections.shuffle(shuffledList);
+        return shuffledList;
+    }
+    
+    private List<Question> extractQuestions(List<Question> questionList, int count) {
+        List<Question> result = new ArrayList<>();
+
+        if (questionList == null || questionList.isEmpty() || count <= 0) {
+            return result; // 引数が不正な場合は空のリストを返す
+        }
+
+        // 指定された数だけ抽出
+        for (int i = 0; i < count && i < questionList.size(); i++) {
+            result.add(questionList.get(i));
+        }
+
+        return result;
+    }
+    
 }
 

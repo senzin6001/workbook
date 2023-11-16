@@ -1,29 +1,64 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-	<head>
-		<meta charset="UTF-8"></meta>
+<!-- ===== コンテンツ ===== -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-2 main">
+            <div th:fragment="question_contents">
+                <!-- 質問の情報を表示する部分 -->
+                <div th:if="${not #lists.isEmpty(questionList)}">
+                    <p th:text="'Category: ' + ${questionList[0].category}"></p>
+                    <h2 th:text="${questionList[0].questionStatement}"></h2>
 
-	</head>
-	<body>
-		<!-- ポイント：th:fragment -->
-		<div th:fragment="question_contents">
-			<div class="page-header">
-				<h1>ホーム</h1>
-			</div>
-			<p>最大問題数：<span th:text="${questionAllCount}"></span></p>
-			<form method="post" action="/questionCreation" th:object="${questionCreationForm}">
-				<label>カテゴリを選択</label>
-				<select class="list-group" name="category">
-					<option th:each="category : ${categories}" class="list-group-category">
-					<span th:text="${category}"></span>
-					</option>
-				</select>
-				<label>出題数を入力</label>
-		        <input type="number" min="1" th:max="${questionAllCount}" name="questionCount">
-		        <button type="submit">出題開始</button>
-			</form>
+                    <div class="choices">
+                        <label><input type="radio" th:name="answer" th:value="1"/> <span th:text="${questionList[0].choice1}"></span></label><br/>
+                        <label><input type="radio" th:name="answer" th:value="2"/> <span th:text="${questionList[0].choice2}"></span></label><br/>
+                        <label><input type="radio" th:name="answer" th:value="3"/> <span th:text="${questionList[0].choice3}"></span></label><br/>
+                        <label><input type="radio" th:name="answer" th:value="4"/> <span th:text="${questionList[0].choice4}"></span></label><br/>
+                    </div>
 
-		</div>
-	</body>
-</html>
+                  	<button onclick="checkAnswer()">Check Answer</button>
+                    <p id="result"></p>
+                    
+                    <button onclick="resetPage()">Reset</button>
+                    <br>
+                                        
+					
+                    <button onclick="toggleExplanation()">解説を見る</button>
+
+                    <p class="explanation" th:text="'解説: ' + ${questionList[0].explanation}"></p>
+
+                </div>
+				<script>
+				    function checkAnswer() {
+				        var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+				        var correctAnswer = "${questionList[0].answer.toString()}";
+				        var resultElement = document.getElementById('result');
+				
+				        if (selectedAnswer && selectedAnswer.value === correctAnswer.toString()) {
+				            resultElement.textContent = '正解！';
+				        } else {	
+				            resultElement.textContent = '不正解';
+				        }
+				    }
+				    
+
+				
+				    function resetPage() {
+				        // 結果を消す
+				        document.getElementById('result').textContent = '';
+				
+				        // ラジオボタンをクリアする
+				        var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+				        if (selectedAnswer) {
+				            selectedAnswer.checked = false;
+				        }
+				    }
+				
+				    function toggleExplanation() {
+				        var explanation = document.querySelector('.explanation');
+				        explanation.style.display = explanation.style.display === 'none' ? 'block' : 'none';
+				    }
+				</script>
+            </div>
+        </div>
+    </div>
+</div>

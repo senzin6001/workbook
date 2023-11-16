@@ -2,11 +2,13 @@ package com.example.demo.login.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.login.domain.model.GroupOrder;
 import com.example.demo.login.domain.model.Question;
@@ -30,10 +33,15 @@ import com.example.demo.login.domain.service.UserService;
 
 @Controller
 public class HomeController{
-	@Autowired
-	QuestionService questionService;
-	@Autowired	
-	UserService userService;
+	
+	
+	private final QuestionService questionService;
+	private final UserService userService;
+	
+    public HomeController(QuestionService questionService,UserService userService) {
+        this.questionService = questionService;
+        this.userService = userService;
+    }
 	
 	private Map<String,String> radioMarriage;
 	private Map<String,String> radioAnswered;
@@ -80,13 +88,55 @@ public class HomeController{
 		
 	    return question;    
 	}
+	private void filterQuestionsBySelection(String selection, int questionCount, List<Question> questionList, List<Question> categoryList) {
+	    if ("all".equals(selection)) {
+	        questionList.addAll(questionService.getRandomQuestions(categoryList, questionCount));
+	    } else if ("incorrect".equals(selection)) {
+	        filterIncorrectQuestions(questionList, categoryList, questionCount);
+	    }
+	}
+
+	private void filterIncorrectQuestions(List<Question> questionList, List<Question> categoryList, int questionCount) {
+	    questionList.addAll(categoryList.stream()
+	            .filter(question -> !question.isResult())
+	            .collect(Collectors.toList()));
+
+	    if (questionCount > 0 && questionList.size() > questionCount) {
+	        Collections.shuffle(questionList);
+	        questionList.subList(0, questionCount);
+	    }
+	}
 	@GetMapping("/home")
-	public String getHome(Model model) {
+	public String getHome(Model model ) {
 		
-		List<String>categoryList = questionService.groupByCategory();		
+		List<String>categoryList = questionService.groupByCategory();
+		
+		int count = questionService.count();
+		model.addAttribute("questionAllCount",count);
 		model.addAttribute("categoryList",categoryList);
 		model.addAttribute("contents","login/home :: home_contents");
 		return "login/homeLayout";
+	}
+	@GetMapping("/question")
+	public String getQuestion(
+	        @RequestParam(name = "categories", required = false) List<String> selectedCategories,
+	        @RequestParam int questionCount,
+	        @RequestParam(name = "selection", defaultValue = "all") String selection,
+	        Model model) {
+
+	    List<Question> questionList = new ArrayList<>();
+
+	    if (selectedCategories != null && !selectedCategories.isEmpty()) {
+	        List<Question> categoryList = questionService.getSelectCategoryList(selectedCategories);
+	        filterQuestionsBySelection(selection, questionCount, questionList, categoryList);
+	    } else {
+	        questionList = questionService.selectMany();
+	    }
+	    
+		model.addAttribute("questionList",questionList);
+
+		model.addAttribute("contents", "login/question :: question_contents");
+	    return "login/homeLayout";
 	}
 	
 	@GetMapping("/userList")
@@ -101,6 +151,7 @@ public class HomeController{
 		model.addAttribute("userListCount",count);
 		return "login/homeLayout";
 	}
+	
 	
 	@GetMapping("/userDetail/{id:.+}")
 	public String getUserDetail(@ModelAttribute SignupForm form, Model model,

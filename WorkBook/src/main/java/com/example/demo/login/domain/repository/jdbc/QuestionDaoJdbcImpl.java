@@ -1,12 +1,16 @@
 package com.example.demo.login.domain.repository.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.Question;
@@ -150,4 +154,32 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 		return categoryList;
 		
 	}
+	
+	@Override
+	public List<Question> selectCategoryList(List<String> selectedCategories) throws DataAccessException {
+	    // SQLクエリの作成
+	    String inClause = String.join(",", Collections.nCopies(selectedCategories.size(), "?"));
+	    String sql = "SELECT * FROM m_question WHERE category IN (" + inClause + ")";
+	    
+	    return jdbc.query(sql, new RowMapper<Question>() {
+	        @Override
+	        public Question mapRow(ResultSet rs, int rowNum) throws SQLException {
+	            Question question = new Question();
+	            question.setQuestionId(rs.getInt("question_id"));
+	            question.setCategory(rs.getString("category"));
+	            question.setQuestionStatement(rs.getString("question_statement"));
+	            question.setChoice1(rs.getString("choice1"));
+	            question.setChoice2(rs.getString("choice2"));
+	            question.setChoice3(rs.getString("choice3"));
+	            question.setChoice4(rs.getString("choice4"));
+	            question.setAnswer(rs.getInt("answer"));
+	            question.setExplanation(rs.getString("explanation"));
+	            question.setAnswered(rs.getBoolean("answered"));
+	            question.setResult(rs.getBoolean("result"));
+	            
+	            return question;
+	        }
+	    }, selectedCategories.toArray());
+	}
+
 }

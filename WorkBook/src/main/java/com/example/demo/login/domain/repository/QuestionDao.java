@@ -15,4 +15,5 @@ public interface QuestionDao {
 	public int deleteOne(Integer questionId) throws DataAccessException;
 	public void questionCsvOut() throws DataAccessException;
 	public List<String> groupByCategory() throws DataAccessException;
+	public List<Question> selectCategoryList(List<String> Categories) throws DataAccessException;
 }

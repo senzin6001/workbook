@@ -15,4 +15,5 @@ public interface UserDao {
 	public int updateOne(User user) throws DataAccessException;
 	public int deleteOne(Integer userId) throws DataAccessException;
 	public void userCsvOut() throws DataAccessException;
+	
 }
