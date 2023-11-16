@@ -21,7 +21,6 @@
                     <button onclick="resetPage()">Reset</button>
                     <br>
                                         
-					
                     <button onclick="toggleExplanation()">解説を見る</button>
 
                     <p class="explanation" th:text="'解説: ' + ${questionList[0].explanation}"></p>
@@ -38,10 +37,7 @@
 				        } else {	
 				            resultElement.textContent = '不正解';
 				        }
-				    }
-				    
-
-				
+				    }		
 				    function resetPage() {
 				        // 結果を消す
 				        document.getElementById('result').textContent = '';
