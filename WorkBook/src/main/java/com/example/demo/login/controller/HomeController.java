@@ -117,8 +117,10 @@ public class HomeController{
 		model.addAttribute("contents","login/home :: home_contents");
 		return "login/homeLayout";
 	}
-	@GetMapping("/question")
-	public String getQuestion(
+	
+
+	@GetMapping("/start")
+	public String initQuestion(
 	        @RequestParam(name = "categories", required = false) List<String> selectedCategories,
 	        @RequestParam int questionCount,
 	        @RequestParam(name = "selection", defaultValue = "all") String selection,
@@ -134,11 +136,32 @@ public class HomeController{
 	    }
 	    
 		model.addAttribute("questionList",questionList);
-
+		model.addAttribute("currentQuestionIndex", 0); // 初期値は0として設定
 		model.addAttribute("contents", "login/question :: question_contents");
 	    return "login/homeLayout";
 	}
-	
+	@GetMapping("/question")
+	public String getQuestion(Model model) {
+	    return "login/homeLayout";
+	}
+	@PostMapping("/nextQuestion")
+	public String nextQuestion(@RequestParam("currentQuestionIndex") int currentQuestionIndex,
+	                           @ModelAttribute("questionList") List<Question> questionList,
+	                           Model model) {
+	    if (currentQuestionIndex < questionList.size() - 1) {
+	        currentQuestionIndex++;
+	    }
+		System.out.println("通った");
+	    return "login/homeLayout";
+	}
+
+	@PostMapping("/previousQuestion")
+	public String previousQuestion(@ModelAttribute("currentQuestionIndex") int currentQuestionIndex) {
+	    if (currentQuestionIndex > 0) {
+	        currentQuestionIndex--;
+	    }
+	    return "redirect:/question";
+	}
 	@GetMapping("/userList")
 	public String getUserList(Model model) {
 		model.addAttribute("contents","login/userList :: userList_contents");
@@ -369,13 +392,13 @@ public class HomeController{
 		userService.userCsvOut();
 		byte[] bytes =null;
 		try {
-			bytes = userService.getFile("sample.csv");
+			bytes = userService.getFile("user_list.csv");
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Type", "text/csv; charset=UTF-8");
-		header.setContentDispositionFormData("filename", "sample.csv");
+		header.setContentDispositionFormData("filename", "user_list.csv");
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
 	
@@ -391,7 +414,7 @@ public class HomeController{
 		}
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Type", "text/csv; charset=UTF-8");
-		header.setContentDispositionFormData("filename", "sample.csv");
+		header.setContentDispositionFormData("filename", "question_list.csv");
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
 	@GetMapping("/questionManagement/csv")
@@ -400,13 +423,13 @@ public class HomeController{
 		questionService.questionCsvOut();
 		byte[] bytes =null;
 		try {
-			bytes = questionService.getFile("sample.csv");
+			bytes = questionService.getFile("question_list.csv");
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Type", "text/csv; charset=UTF-8");
-		header.setContentDispositionFormData("filename", "sample.csv");
+		header.setContentDispositionFormData("filename", "question_list.csv");
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
 	@GetMapping("/admin")

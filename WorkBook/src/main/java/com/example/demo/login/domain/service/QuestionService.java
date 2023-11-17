@@ -26,6 +26,30 @@ public class QuestionService{
 	@Qualifier("QuestionDaoJdbcImpl")
 	QuestionDao dao;
 	
+	
+	
+    private List<Question> shuffleList(List<Question> questionList) {
+        List<Question> shuffledList = new ArrayList<>(questionList);
+        Collections.shuffle(shuffledList);
+        return shuffledList;
+    }
+    
+    private List<Question> extractQuestions(List<Question> questionList, int count) {
+        List<Question> result = new ArrayList<>();
+
+        if (questionList == null ||  count <= 0) {
+            return result; // 引数が不正な場合は空のリストを返す
+        }
+
+        // 指定された数だけ抽出
+        for (int i = 0; i < count && i < questionList.size(); i++) {
+            result.add(questionList.get(i));
+        }
+
+        return result;
+    }
+	
+	
 	public boolean insert(Question user) {
 		
 
@@ -88,27 +112,9 @@ public class QuestionService{
 	}
 	
 
-	
-    private List<Question> shuffleList(List<Question> questionList) {
-        List<Question> shuffledList = new ArrayList<>(questionList);
-        Collections.shuffle(shuffledList);
-        return shuffledList;
-    }
     
-    private List<Question> extractQuestions(List<Question> questionList, int count) {
-        List<Question> result = new ArrayList<>();
-
-        if (questionList == null || questionList.isEmpty() || count <= 0) {
-            return result; // 引数が不正な場合は空のリストを返す
-        }
-
-        // 指定された数だけ抽出
-        for (int i = 0; i < count && i < questionList.size(); i++) {
-            result.add(questionList.get(i));
-        }
-
-        return result;
-    }
+    
+    
     
 }
 
