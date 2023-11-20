@@ -3,11 +3,9 @@ package com.example.demo.login.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.login.domain.model.GroupOrder;
@@ -88,24 +88,7 @@ public class HomeController{
 		
 	    return question;    
 	}
-	private void filterQuestionsBySelection(String selection, int questionCount, List<Question> questionList, List<Question> categoryList) {
-	    if ("all".equals(selection)) {
-	        questionList.addAll(questionService.getRandomQuestions(categoryList, questionCount));
-	    } else if ("incorrect".equals(selection)) {
-	        filterIncorrectQuestions(questionList, categoryList, questionCount);
-	    }
-	}
 
-	private void filterIncorrectQuestions(List<Question> questionList, List<Question> categoryList, int questionCount) {
-	    questionList.addAll(categoryList.stream()
-	            .filter(question -> !question.isResult())
-	            .collect(Collectors.toList()));
-
-	    if (questionCount > 0 && questionList.size() > questionCount) {
-	        Collections.shuffle(questionList);
-	        questionList.subList(0, questionCount);
-	    }
-	}
 	@GetMapping("/home")
 	public String getHome(Model model ) {
 		
@@ -125,43 +108,64 @@ public class HomeController{
 	        @RequestParam int questionCount,
 	        @RequestParam(name = "selection", defaultValue = "all") String selection,
 	        Model model) {
-
+		
+		//出題テーブルを初期化
+	    questionService.initQuestionTable();
 	    List<Question> questionList = new ArrayList<>();
-
+	    questionList = questionService.selectMany();
 	    if (selectedCategories != null && !selectedCategories.isEmpty()) {
-	        List<Question> categoryList = questionService.getSelectCategoryList(selectedCategories);
-	        filterQuestionsBySelection(selection, questionCount, questionList, categoryList);
-	    } else {
-	        questionList = questionService.selectMany();
+	        questionList = questionService.filterQuestionsByCategoryList(questionList,selectedCategories);
+	    }
+	    if(selection != "all") {
+	    	questionList = questionService.filterIncorrectQuestions(questionList);
 	    }
 	    
-		model.addAttribute("questionList",questionList);
-		model.addAttribute("currentQuestionIndex", 0); // 初期値は0として設定
-		model.addAttribute("contents", "login/question :: question_contents");
-	    return "login/homeLayout";
-	}
-	@GetMapping("/question")
-	public String getQuestion(Model model) {
-	    return "login/homeLayout";
-	}
-	@PostMapping("/nextQuestion")
-	public String nextQuestion(@RequestParam("currentQuestionIndex") int currentQuestionIndex,
-	                           @ModelAttribute("questionList") List<Question> questionList,
-	                           Model model) {
-	    if (currentQuestionIndex < questionList.size() - 1) {
-	        currentQuestionIndex++;
+	    questionList = questionService.getRandomQuestions(questionList);
+	    
+	    if(questionList.size() > questionCount) {
+	    	questionList = questionService.extractQuestions(questionList, questionCount);
 	    }
-		System.out.println("通った");
-	    return "login/homeLayout";
+	    //出題テーブルに登録
+	    questionService.insertQuestionList(questionList);
+	    
+	    return "redirect:/login/question";
+	}
+	@GetMapping("/login/question")
+	public String getQuestion(Model model) {
+		//出題テーブルから解答済以外のidを取得
+		List<Question> questionList = new ArrayList<>();
+		questionList = questionService.filterUnansweredQuestions();
+
+		//全問が終了
+		if (questionList.size() == 0) {
+			return "redirect:/login/result";
+		}
+
+		//出題数を取得
+		int countMyQuestion = questionService.countMyQuesetion();
+		model.addAttribute("totalQuestionNumber","全" + countMyQuestion + "問中");
+
+		//現在何問目か
+		int nowQuestionNumber = countMyQuestion - questionList.size() + 1;
+		model.addAttribute("nowQuestionNumber",nowQuestionNumber + "問目");
+
+		//出題
+	    model.addAttribute("question",questionService.selectOne(questionList.get(0).getQuestionId()));
+
+		return "question";
+		
+	}
+	
+	@RequestMapping(path = "answer", method = RequestMethod.POST)
+	public String answer(@RequestParam(name = "id", required = false) Integer id,
+			@RequestParam(name = "answer", required = false) Integer answer,
+			Model model) {
+		
+		
+		return "redirect:/login/question";
+		
 	}
 
-	@PostMapping("/previousQuestion")
-	public String previousQuestion(@ModelAttribute("currentQuestionIndex") int currentQuestionIndex) {
-	    if (currentQuestionIndex > 0) {
-	        currentQuestionIndex--;
-	    }
-	    return "redirect:/question";
-	}
 	@GetMapping("/userList")
 	public String getUserList(Model model) {
 		model.addAttribute("contents","login/userList :: userList_contents");

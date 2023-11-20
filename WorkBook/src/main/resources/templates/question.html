@@ -1,0 +1,69 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-2 main">
+            <div th:fragment="question_contents">
+                <!-- 質問の情報を表示する部分 -->
+			    <p th:text="${totalQuestionNumber}" id="totalQuestionNumber"></p>
+
+			    <p th:text="${nowQuestionNumber}" id="nowQuestionNumber"></p>
+
+    			<h3>問題</h3>
+				<div th:text="${question.questionStatement}"></div>
+				<form method=post th:action="@{/login/answer}">
+	                <div class="choices">
+	                    <label><input type="radio" th:name="answer" th:value="1"/> <span th:text="${question.choice1}"></span></label><br/>
+	                    <label><input type="radio" th:name="answer" th:value="2"/> <span th:text="${question.choice2}"></span></label><br/>
+	                    <label><input type="radio" th:name="answer" th:value="3"/> <span th:text="${question.choice3}"></span></label><br/>
+	                    <label><input type="radio" th:name="answer" th:value="4"/> <span th:text="${question.choice4}"></span></label><br/>
+	                </div>
+	
+	                <button onclick="checkAnswer()">回答</button>
+	                <p id="result"></p>
+	
+	                <button onclick="resetPage()">リセット</button>
+	                <br>
+	
+	                <button onclick="toggleExplanation()">解説を見る</button>
+	                <p class="explanation" th:text="'解説: ' + ${question.explanation}" style="display: none;"></p>
+	                
+	                <input type="hidden" name="id" th:value="${question.id}">
+	        		<button class="btn btn-success" name="submit">次の問題へ</button>
+				</form>
+                
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var correctAnswer = /*[[${question.answer.toString()}]]*/ null;
+                    /*]]>*/
+                </script>
+                <script>
+                    function checkAnswer() {
+                        var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+                        var resultElement = document.getElementById('result');
+
+                        if (selectedAnswer.value === correctAnswer.toString()) {
+                            resultElement.textContent = '正解！';
+                        } else {
+                            resultElement.textContent = '不正解！';
+                        }
+                    }
+
+                    function resetPage() {
+                        // 結果を消す
+                        document.getElementById('result').textContent = '';
+
+                        // ラジオボタンをクリアする
+                        var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+                        if (selectedAnswer) {
+                            selectedAnswer.checked = false;
+                        }
+                    }
+
+                    function toggleExplanation() {
+                        var explanation = document.querySelector('.explanation');
+                        explanation.style.display = explanation.style.display === 'none' ? 'block' : 'none';
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</div>

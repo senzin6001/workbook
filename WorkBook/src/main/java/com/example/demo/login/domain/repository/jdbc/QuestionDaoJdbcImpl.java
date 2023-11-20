@@ -1,16 +1,15 @@
 package com.example.demo.login.domain.repository.jdbc;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.Question;
@@ -159,27 +158,75 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 	public List<Question> selectCategoryList(List<String> selectedCategories) throws DataAccessException {
 	    // SQLクエリの作成
 	    String inClause = String.join(",", Collections.nCopies(selectedCategories.size(), "?"));
-	    String sql = "SELECT * FROM m_question WHERE category IN (" + inClause + ")";
+	    String sql = "SELECT question_id FROM my_question WHERE category IN (" + inClause + ")";
 	    
-	    return jdbc.query(sql, new RowMapper<Question>() {
-	        @Override
-	        public Question mapRow(ResultSet rs, int rowNum) throws SQLException {
-	            Question question = new Question();
-	            question.setQuestionId(rs.getInt("question_id"));
-	            question.setCategory(rs.getString("category"));
-	            question.setQuestionStatement(rs.getString("question_statement"));
-	            question.setChoice1(rs.getString("choice1"));
-	            question.setChoice2(rs.getString("choice2"));
-	            question.setChoice3(rs.getString("choice3"));
-	            question.setChoice4(rs.getString("choice4"));
-	            question.setAnswer(rs.getInt("answer"));
-	            question.setExplanation(rs.getString("explanation"));
-	            question.setAnswered(rs.getBoolean("answered"));
-	            question.setResult(rs.getBoolean("result"));
-	            
-	            return question;
-	        }
-	    }, selectedCategories.toArray());
+	    return jdbc.queryForList(sql, Question.class, selectedCategories.toArray());
+	}
+	public void initQuestionTable() throws DataAccessException{		
+		String sql = "DELETE FROM my_question";
+		jdbc.update(sql);
+	}
+	
+	@Override
+	public void insertQuestionList(List<Question> questionList) throws DataAccessException {
+	    // SQLクエリの作成
+	    String inClause = questionList.stream()
+	            .map(question -> String.valueOf(question.getQuestionId()))
+	            .collect(Collectors.joining(","));
+	    String sqlSelect = "SELECT * FROM m_question WHERE question_id IN (" + inClause + ")";
+
+	    // m_questionテーブルから指定されたquestionListに含まれるquestionIdに一致するレコードを取得
+	    List<Map<String, Object>> selectedRecords = jdbc.queryForList(sqlSelect);
+
+	    // my_questionテーブルにレコードを挿入
+	    String sqlInsert = "INSERT INTO my_question(question_id, category, question_statement, choice1, choice2, choice3, choice4, answer, explanation, answered, result)"
+	            + " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+
+	    for (Map<String, Object> record : selectedRecords) {
+	        jdbc.update(sqlInsert,
+	                record.get("question_id"),
+	                record.get("category"),
+	                record.get("question_statement"),
+	                record.get("choice1"),
+	                record.get("choice2"),
+	                record.get("choice3"),
+	                record.get("choice4"),
+	                record.get("answer"),
+	                record.get("explanation"),
+	                record.get("answered"),
+	                record.get("result"));
+	    }
+	}
+	
+	public List<Question> filterUnansweredQuestions() throws DataAccessException{		
+        String sqlSelect = "SELECT * FROM my_question WHERE answered = false";
+
+        List<Question> unansweredQuestions = jdbc.query(sqlSelect, (ResultSet rs, int rowNum) -> {
+            Question question = new Question();
+            question.setQuestionId(rs.getInt("question_id"));
+            question.setCategory(rs.getString("category"));
+            question.setQuestionStatement(rs.getString("question_statement"));
+            question.setChoice1(rs.getString("choice1"));
+            question.setChoice2(rs.getString("choice2"));
+            question.setChoice3(rs.getString("choice3"));
+            question.setChoice4(rs.getString("choice4"));
+            question.setAnswer(rs.getInt("answer"));
+            question.setExplanation(rs.getString("explanation"));
+            question.setAnswered(rs.getBoolean("answered"));
+            question.setResult(rs.getBoolean("result"));
+
+            return question;
+        });
+
+        return unansweredQuestions;
+		
+		
+	}
+	
+	@Override	
+	public int myQuestionCount() throws DataAccessException{
+		int count = jdbc.queryForObject("SELECT COUNT(*) FROM my_question",Integer.class);
+		return count;
 	}
 
 }
