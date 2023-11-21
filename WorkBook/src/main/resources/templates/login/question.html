@@ -15,21 +15,21 @@
 	                    <label><input type="radio" th:name="answer" th:value="2"/> <span th:text="${question.choice2}"></span></label><br/>
 	                    <label><input type="radio" th:name="answer" th:value="3"/> <span th:text="${question.choice3}"></span></label><br/>
 	                    <label><input type="radio" th:name="answer" th:value="4"/> <span th:text="${question.choice4}"></span></label><br/>
+	                	<input type="radio" th:name="answer" value="5" checked="checked" style="display:none;"/>
 	                </div>
-	
-	                <button onclick="checkAnswer()">回答</button>
-	                <p id="result"></p>
-	
-	                <button onclick="resetPage()">リセット</button>
-	                <br>
-	
-	                <button onclick="toggleExplanation()">解説を見る</button>
-	                <p class="explanation" th:text="'解説: ' + ${question.explanation}" style="display: none;"></p>
+	                <input type="hidden" name="id" th:value="${question.questionId}">
 	                
-	                <input type="hidden" name="id" th:value="${question.id}">
 	        		<button class="btn btn-success" name="submit">次の問題へ</button>
 				</form>
-                
+				<button onclick="checkAnswer()">回答</button>
+                <p id="result"></p>
+
+                <button onclick="resetPage()">リセット</button>
+                <br>
+
+                <button onclick="toggleExplanation()">解説を見る</button>
+                <p class="explanation" th:text="'解説: ' + ${question.explanation}" style="display: none;"></p>
+            
                 <script th:inline="javascript">
                     /*<![CDATA[*/
                     var correctAnswer = /*[[${question.answer.toString()}]]*/ null;

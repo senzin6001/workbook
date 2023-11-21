@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS m_question (
 );
 
 CREATE TABLE IF NOT EXISTS my_question (
-	question_id INT PRIMARY KEY AUTO_INCREMENT, -- AUTO_INCREMENT を追加
+	question_id INT,
 	category VARCHAR(30),
 	question_statement VARCHAR(256),
 	choice1 VARCHAR(50),

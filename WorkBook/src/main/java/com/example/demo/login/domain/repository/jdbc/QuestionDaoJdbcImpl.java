@@ -2,12 +2,10 @@ package com.example.demo.login.domain.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,8 +17,10 @@ import com.example.demo.login.domain.repository.QuestionDao;
 @Repository("QuestionDaoJdbcImpl")
 public class QuestionDaoJdbcImpl implements QuestionDao{
 	
-	@Autowired
-	JdbcTemplate jdbc;
+    private final JdbcTemplate jdbc;
+    public QuestionDaoJdbcImpl(JdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 	
 	@Override	
 	public int count() throws DataAccessException{
@@ -31,7 +31,7 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 	public int insertOne(Question question)throws DataAccessException{
 		
 		String sql = "INSERT INTO m_question(category,"
-				+"questionStatement,"
+				+"question_Statement,"
 				+"choice1,"
 				+"choice2,"
 				+"choice3,"
@@ -106,7 +106,7 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 		String sql = "UPDATE m_question"
 				+ " SET"
 				+ " category=?,"
-				+ " questionStatement=?,"
+				+ " question_Statement=?,"
 				+ " choice1=?,"
 				+ " choice2=?,"
 				+ " choice3=?,"
@@ -153,15 +153,7 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 		return categoryList;
 		
 	}
-	
-	@Override
-	public List<Question> selectCategoryList(List<String> selectedCategories) throws DataAccessException {
-	    // SQLクエリの作成
-	    String inClause = String.join(",", Collections.nCopies(selectedCategories.size(), "?"));
-	    String sql = "SELECT question_id FROM my_question WHERE category IN (" + inClause + ")";
-	    
-	    return jdbc.queryForList(sql, Question.class, selectedCategories.toArray());
-	}
+	@Override	
 	public void initQuestionTable() throws DataAccessException{		
 		String sql = "DELETE FROM my_question";
 		jdbc.update(sql);
@@ -194,10 +186,10 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 	                record.get("answer"),
 	                record.get("explanation"),
 	                record.get("answered"),
-	                record.get("result"));
+	                false);
 	    }
 	}
-	
+	@Override
 	public List<Question> filterUnansweredQuestions() throws DataAccessException{		
         String sqlSelect = "SELECT * FROM my_question WHERE answered = false";
 
@@ -228,5 +220,28 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 		int count = jdbc.queryForObject("SELECT COUNT(*) FROM my_question",Integer.class);
 		return count;
 	}
+	
+    @Override
+    public void saveResult(int questionId, boolean result) throws DataAccessException {
+        // my_questionテーブルのresultフィールドを更新
+        String sqlUpdateMyQuestion = "UPDATE my_question SET result = ? WHERE question_id = ?";
+        jdbc.update(sqlUpdateMyQuestion, result, questionId);
+
+        // m_questionテーブルのresultフィールドを更新
+        String sqlUpdateMQuestion = "UPDATE m_question SET result = ? WHERE question_id = ?";
+        jdbc.update(sqlUpdateMQuestion, result, questionId);
+    }
+    @Override
+    public void saveAnswered(int questionId) throws DataAccessException {
+        String sql = "UPDATE my_question SET answered = true WHERE question_id = ?";
+        jdbc.update(sql,questionId);
+    }
+    
+    @Override
+    public int countCorrectAnswer() throws DataAccessException{
+        String sql = "SELECT COUNT(*) FROM my_question WHERE result = true";
+        return jdbc.queryForObject(sql, Integer.class);
+    	
+    }
 
 }

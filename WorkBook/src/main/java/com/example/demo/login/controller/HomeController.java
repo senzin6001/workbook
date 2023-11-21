@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.login.domain.model.GroupOrder;
@@ -46,6 +44,17 @@ public class HomeController{
 	private Map<String,String> radioMarriage;
 	private Map<String,String> radioAnswered;
 	private Map<String,String> radioResult;
+	private Map<String,String> radioIncorrect;
+	
+	private Map<String,String> initRadioMarriage(){
+		
+		Map<String,String> radio =new LinkedHashMap<>();
+		
+		radio.put("既婚", "true");
+		radio.put("未婚", "false");
+		return radio;
+	}
+	
 	
 	private Map<String,String> initRadioAnswered(){
 		Map<String,String> radio = new LinkedHashMap<>();
@@ -61,15 +70,14 @@ public class HomeController{
 		return radio;		
 	}
 	
-	
-	private Map<String,String> initRadioMarriage(){
+	private Map<String,String> initRadioIncorrect(){
+		Map<String,String> radio = new LinkedHashMap<>();
 		
-		Map<String,String> radio =new LinkedHashMap<>();
-		
-		radio.put("既婚", "true");
-		radio.put("未婚", "false");
-		return radio;
-	}
+		radio.put("すべて", "true");
+		radio.put("不正解のみ", "false");
+		return radio;		
+	}	
+
 	
 	private Question convertQuestionCreationFormToQuestion(QuestionCreationForm form) {
 		
@@ -92,6 +100,9 @@ public class HomeController{
 	@GetMapping("/home")
 	public String getHome(Model model ) {
 		
+		radioIncorrect = initRadioIncorrect();
+		model.addAttribute("radioIncorrect",radioIncorrect);
+		
 		List<String>categoryList = questionService.groupByCategory();
 		
 		int count = questionService.count();
@@ -106,7 +117,7 @@ public class HomeController{
 	public String initQuestion(
 	        @RequestParam(name = "categories", required = false) List<String> selectedCategories,
 	        @RequestParam int questionCount,
-	        @RequestParam(name = "selection", defaultValue = "all") String selection,
+	        @RequestParam(name = "selection") String selection,
 	        Model model) {
 		
 		//出題テーブルを初期化
@@ -116,53 +127,79 @@ public class HomeController{
 	    if (selectedCategories != null && !selectedCategories.isEmpty()) {
 	        questionList = questionService.filterQuestionsByCategoryList(questionList,selectedCategories);
 	    }
-	    if(selection != "all") {
+	    
+		System.out.println("selection"+selection);
+	    if("incorrect".equals(selection)) {
+			System.out.println("通った");
 	    	questionList = questionService.filterIncorrectQuestions(questionList);
 	    }
-	    
-	    questionList = questionService.getRandomQuestions(questionList);
-	    
+	    questionList = questionService.getRandomQuestions(questionList);   
 	    if(questionList.size() > questionCount) {
 	    	questionList = questionService.extractQuestions(questionList, questionCount);
 	    }
+		
+		if(questionList.size() < 1) {
+			model.addAttribute("message","問題数が0です。");
+			model.addAttribute("contents","login/home :: home_contents");
+			return getHome(model);
+		}
+		
 	    //出題テーブルに登録
 	    questionService.insertQuestionList(questionList);
 	    
-	    return "redirect:/login/question";
+	    return getQuestion(model);
 	}
 	@GetMapping("/login/question")
 	public String getQuestion(Model model) {
 		//出題テーブルから解答済以外のidを取得
 		List<Question> questionList = new ArrayList<>();
 		questionList = questionService.filterUnansweredQuestions();
-
+		
 		//全問が終了
 		if (questionList.size() == 0) {
-			return "redirect:/login/result";
+			return getResult(model);
 		}
-
 		//出題数を取得
 		int countMyQuestion = questionService.countMyQuesetion();
 		model.addAttribute("totalQuestionNumber","全" + countMyQuestion + "問中");
-
 		//現在何問目か
 		int nowQuestionNumber = countMyQuestion - questionList.size() + 1;
 		model.addAttribute("nowQuestionNumber",nowQuestionNumber + "問目");
-
 		//出題
 	    model.addAttribute("question",questionService.selectOne(questionList.get(0).getQuestionId()));
-
-		return "question";
+	    model.addAttribute("contents","login/question :: question_contents");
+		return "login/homeLayout";
 		
 	}
 	
-	@RequestMapping(path = "answer", method = RequestMethod.POST)
+	@GetMapping("/login/result")
+	public String getResult(Model model) {
+		
+		int countMyQuestion = questionService.countMyQuesetion();
+		model.addAttribute("countMyQuestion", countMyQuestion);		
+		int countCorrectAnswer = questionService.countCorrectAnswer();
+		model.addAttribute("countCorrectAnswer", countCorrectAnswer);
+
+		double correctAnswerRate = (double)countCorrectAnswer/countMyQuestion * 100;
+		model.addAttribute("correctAnswerRate", correctAnswerRate);
+	    model.addAttribute("contents","login/result :: result_contents");
+		return "login/homeLayout";
+		
+	}
+	
+	@PostMapping("/login/answer")
 	public String answer(@RequestParam(name = "id", required = false) Integer id,
-			@RequestParam(name = "answer", required = false) Integer answer,
+			@RequestParam(name = "answer", required = false) int answer,
 			Model model) {
 		
-		
-		return "redirect:/login/question";
+		if (answer == questionService.selectOne(id).getAnswer()) {
+			questionService.saveResult(id,true);
+		}else {
+			questionService.saveResult(id,false);
+				
+		}
+		questionService.saveAnswered(id);	
+		return getQuestion(model);
 		
 	}
 

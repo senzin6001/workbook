@@ -20,11 +20,12 @@
 					<br/>
 				</div>
 				<label>出題数を入力</label>
-		        <input type="number" min="1" th:value="30" th:max="${questionAllCount}" name="questionCount">
+		        <input type="number" min="1" th:value="${questionAllCount}" th:max="${questionAllCount}" name="questionCount">
 		        <label>出題対象：</label>
 				<input type="radio" name="selection" value="all" checked/> すべて
 				<input type="radio" name="selection" value="incorrect"/> 不正解のみ
 				<br/>
+				<p th:if="${not #strings.isEmpty(message)}" th:text="${message}"></p>
 		        <button type="submit">出題開始</button>
 			</form>
 

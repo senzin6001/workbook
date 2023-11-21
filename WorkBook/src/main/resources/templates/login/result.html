@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head>
+		<meta charset="UTF-8">
+
+	</head>
+	<body>
+		<!-- ポイント：th:fragment -->
+		<div th:fragment="result_contents">
+		<p><span style="font-weight: bold;">出題数：</span><span th:text="${countMyQuestion}"></span> 問</p>
+		<p><span>正解数：</span><span th:text="${countCorrectAnswer}"></span></p>
+		<p><span>正解率：</span><span th:text="${correctAnswerRate}"></span> %</p>
+		<a th:href="@{'/home'}">戻る</a>
+		</div>
+	</body>
+</html>

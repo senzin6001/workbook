@@ -87,7 +87,7 @@ public class QuestionService{
     
     public List<Question> filterIncorrectQuestions(List<Question> questionList) {
     	return questionList.stream()
-                .filter(question -> !question.isResult()) // 値がtrueのアイテムのみをフィルタリング
+                .filter(question -> !question.isResult()) 
                 .collect(Collectors.toList());
     }
 	
@@ -142,6 +142,17 @@ public class QuestionService{
     public int countMyQuesetion() {
 
     	return dao.myQuestionCount();	
+    }
+    
+    public void saveResult(int questionId,boolean result) {
+    	dao.saveResult(questionId,result);
+    }
+    
+    public void saveAnswered(int questionId) {
+    	dao.saveAnswered(questionId);
+    }
+    public int countCorrectAnswer() {
+    	return dao.countCorrectAnswer();
     }
 }
 

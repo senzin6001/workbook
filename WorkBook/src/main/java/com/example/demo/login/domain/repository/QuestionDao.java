@@ -15,9 +15,11 @@ public interface QuestionDao {
 	public int deleteOne(Integer questionId) throws DataAccessException;
 	public void questionCsvOut() throws DataAccessException;
 	public List<String> groupByCategory() throws DataAccessException;
-	public List<Question> selectCategoryList(List<String> Categories) throws DataAccessException;
 	public void initQuestionTable() throws DataAccessException;
 	public void insertQuestionList(List<Question> questionList) throws DataAccessException;
 	public List<Question> filterUnansweredQuestions() throws DataAccessException;
 	public int myQuestionCount() throws DataAccessException;
+	public void saveResult(int questionId,boolean result) throws DataAccessException;
+	public void saveAnswered(int questionId) throws DataAccessException;
+    public int countCorrectAnswer() throws DataAccessException;
 }
