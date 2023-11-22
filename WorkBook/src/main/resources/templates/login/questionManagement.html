@@ -14,17 +14,17 @@
 			</div>
 			<table class="table table-bordered table-hover table-striped">
 				<tr>
-					<th class="info col-sm-2">問題ID</th>
-					<th class="info col-sm-2">カテゴリ</th>
-					<th class="info col-sm-2">問題文</th>
-					<th class="info col-sm-2">選択肢１</th>
-					<th class="info col-sm-2">選択肢２</th>
-					<th class="info col-sm-2">選択肢３</th>
-					<th class="info col-sm-2">選択肢４</th>
-					<th class="info col-sm-2">答え</th>
-					<th class="info col-sm-2">解説</th>
-					<th class="info col-sm-2">解答済み</th>
-					<th class="info col-sm-2">結果</th>
+					<th class="info col-sm-1">問題ID</th>
+					<th class="info col-sm-1">カテゴリ</th>
+					<th class="info col-sm-1">問題文</th>
+					<th class="info col-sm-1">選択肢１</th>
+					<th class="info col-sm-1">選択肢２</th>
+					<th class="info col-sm-1">選択肢３</th>
+					<th class="info col-sm-1">選択肢４</th>
+					<th class="info col-sm-1">答え</th>
+					<th class="info col-sm-1">解説</th>
+					<th class="info col-sm-1">解答済み</th>
+					<th class="info col-sm-1">結果</th>
 				</tr>
 				<tr th:each="question:${questionManagement}">
 					<td th:text="${question.questionId}"></td>

@@ -31,7 +31,7 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 	public int insertOne(Question question)throws DataAccessException{
 		
 		String sql = "INSERT INTO m_question(category,"
-				+"question_Statement,"
+				+"question_statement,"
 				+"choice1,"
 				+"choice2,"
 				+"choice3,"
@@ -101,35 +101,49 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
 	}
 	@Override
 	public int updateOne(Question question) throws DataAccessException{
-		
+		System.out.println(question.getCategory());
+		System.out.println(question.getQuestionStatement());
+		System.out.println(question.getChoice1());
+		System.out.println(question.getChoice2());
+		System.out.println(question.getChoice3());
+		System.out.println(question.getChoice4());
+		System.out.println(question.getAnswer());
+		System.out.println(question.getExplanation());
+		System.out.println(question.isAnswered());
+		System.out.println(question.isResult());
+		System.out.println(question.getQuestionId());
 		
 		String sql = "UPDATE m_question"
 				+ " SET"
 				+ " category=?,"
-				+ " question_Statement=?,"
+				+ " question_statement=?,"
 				+ " choice1=?,"
 				+ " choice2=?,"
 				+ " choice3=?,"
 				+ " choice4=?,"
 				+ " answer=?,"
 				+ " explanation=?,"
-				+ " answered=?"
+				+ " answered=?,"
+				+ " result=?"
 				+ " WHERE question_id=?";
 		
 		int rowNumber = jdbc.update(sql,
-			question.getCategory(),
-			question.getQuestionStatement(),
-			question.getChoice1(),
-			question.getChoice2(),
-			question.getChoice3(),
-			question.getChoice4(),
-			question.getAnswer(),
-			question.getExplanation(),
-			question.isAnswered(),
-			question.isResult());
+				question.getCategory(),
+				question.getQuestionStatement(),
+				question.getChoice1(),
+				question.getChoice2(),
+				question.getChoice3(),
+				question.getChoice4(),
+				question.getAnswer(),
+				question.getExplanation(),
+				question.isAnswered(),
+				question.isResult(),
+				question.getQuestionId());
+		System.out.println(sql);
+		System.out.println(rowNumber);
 		return rowNumber;
-		
 	}
+	
 	@Override
 	public int deleteOne(Integer questionId)throws DataAccessException{
 		int rowNumber = jdbc.update("DELETE FROM m_question WHERE question_id=?",questionId);

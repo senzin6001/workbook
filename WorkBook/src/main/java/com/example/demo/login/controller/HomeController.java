@@ -3,6 +3,7 @@ package com.example.demo.login.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,58 +32,94 @@ import com.example.demo.login.domain.service.UserService;
 
 @Controller
 public class HomeController{
-	
-	
+		
 	private final QuestionService questionService;
 	private final UserService userService;
-	
-    public HomeController(QuestionService questionService,UserService userService) {
-        this.questionService = questionService;
-        this.userService = userService;
-    }
 	
 	private Map<String,String> radioMarriage;
 	private Map<String,String> radioAnswered;
 	private Map<String,String> radioResult;
 	private Map<String,String> radioIncorrect;
+		
+    public HomeController(QuestionService questionService, UserService userService) {
+    	  	
+        this.questionService = questionService;
+        this.userService = userService;
+        
+    }
 	
 	private Map<String,String> initRadioMarriage(){
-		
+				
 		Map<String,String> radio =new LinkedHashMap<>();
 		
 		radio.put("既婚", "true");
 		radio.put("未婚", "false");
+		
 		return radio;
+		
 	}
 	
-	
+    private void initializeMarriageRadioMaps(Model model) {
+        radioMarriage = initRadioMarriage();
+        model.addAttribute("radioMarriage", radioMarriage);
+    }
+		
 	private Map<String,String> initRadioAnswered(){
+				
 		Map<String,String> radio = new LinkedHashMap<>();
+		
 		radio.put("解答済み", "true");
 		radio.put("未回答", "false");
+		
 		return radio;
+		
 	}
+	
+    private void initializeAnsweredRadioMaps(Model model) {
+        radioAnswered = initRadioAnswered();
+        model.addAttribute("radioAnswered", radioAnswered);
+    }
+		
 	private Map<String,String> initRadioResult(){
+		
 		Map<String,String> radio = new LinkedHashMap<>();
 		
 		radio.put("正解", "true");
 		radio.put("不正解", "false");
-		return radio;		
+		
+		return radio;	
+		
 	}
 	
+    private void initializeResultRadioMaps(Model model) {
+        radioResult = initRadioResult();
+        model.addAttribute("radioResult", radioResult);
+    }
+		
 	private Map<String,String> initRadioIncorrect(){
+				
 		Map<String,String> radio = new LinkedHashMap<>();
 		
 		radio.put("すべて", "true");
 		radio.put("不正解のみ", "false");
-		return radio;		
-	}	
+		
+		return radio;
+		
+	}
+		
+    private void initializeIncorrectRadioMaps(Model model) {
+        radioIncorrect = initRadioIncorrect();
+        model.addAttribute("radioIncorrect", radioIncorrect);
+    }
+    
+    
+    
 
-	
+		
 	private Question convertQuestionCreationFormToQuestion(QuestionCreationForm form) {
-		
+				
 		Question question = new Question();
-		
+		question.setQuestionId(form.getQuestionId());
 		question.setCategory(form.getCategory());
 		question.setQuestionStatement(form.getQuestionStatement());
 		question.setChoice1(form.getChoice1());
@@ -94,25 +131,42 @@ public class HomeController{
 		question.setAnswered(form.isAnswered());
 		question.setResult(form.isResult());
 		
-	    return question;    
+	    return question;  
+	    
 	}
-
-	@GetMapping("/home")
-	public String getHome(Model model ) {
+	
+	private User convertSignupFormToUser(SignupForm form) {
 		
-		radioIncorrect = initRadioIncorrect();
-		model.addAttribute("radioIncorrect",radioIncorrect);
+		User user = new User();
+		user.setUserId(form.getUserId());
+		user.setEmail(form.getEmail());
+		user.setPassword(form.getPassword());
+		user.setUserName(form.getUserName());
+		user.setBirthday(form.getBirthday());
+		user.setAge(form.getAge());
+		user.setMarriage(form.isMarriage());
 		
-		List<String>categoryList = questionService.groupByCategory();
-		
-		int count = questionService.count();
-		model.addAttribute("questionAllCount",count);
-		model.addAttribute("categoryList",categoryList);
-		model.addAttribute("contents","login/home :: home_contents");
-		return "login/homeLayout";
+	    return user;  
+	    
 	}
 	
 
+	@GetMapping("/home")
+	public String getHome(Model model ) {		
+		initializeIncorrectRadioMaps(model);
+		
+		List<String>categoryList = questionService.groupByCategory();
+		model.addAttribute("categoryList",categoryList);
+
+		int count = questionService.count();
+		model.addAttribute("questionAllCount",count);
+		
+		model.addAttribute("contents","login/home :: home_contents");
+		
+		return "login/homeLayout";
+		
+	}
+	
 	@GetMapping("/start")
 	public String initQuestion(
 	        @RequestParam(name = "categories", required = false) List<String> selectedCategories,
@@ -160,7 +214,7 @@ public class HomeController{
 			return getResult(model);
 		}
 		//出題数を取得
-		int countMyQuestion = questionService.countMyQuesetion();
+		int countMyQuestion = questionService.countMyQuestion();
 		model.addAttribute("totalQuestionNumber","全" + countMyQuestion + "問中");
 		//現在何問目か
 		int nowQuestionNumber = countMyQuestion - questionList.size() + 1;
@@ -175,7 +229,7 @@ public class HomeController{
 	@GetMapping("/login/result")
 	public String getResult(Model model) {
 		
-		int countMyQuestion = questionService.countMyQuesetion();
+		int countMyQuestion = questionService.countMyQuestion();
 		model.addAttribute("countMyQuestion", countMyQuestion);		
 		int countCorrectAnswer = questionService.countCorrectAnswer();
 		model.addAttribute("countCorrectAnswer", countCorrectAnswer);
@@ -223,8 +277,9 @@ public class HomeController{
 		System.out.println("userId="+ userId);
 		// ::は<div th:fragment="userDetail_contents">
 		model.addAttribute("contents","login/userDetail::userDetail_contents");
-		radioMarriage = initRadioMarriage();
-		model.addAttribute("radioMarriage",radioMarriage);
+		
+		initializeMarriageRadioMaps(model);
+		
 		if(userId !=null && userId > 0) {
 			User user = userService.selectOne(userId);
 			form.setUserId(user.getUserId());
@@ -248,14 +303,7 @@ public class HomeController{
 			return getUserDetail(form,model,form.getUserId());
 		}
 		
-		User user = new User();
-		user.setUserId(form.getUserId());
-		user.setEmail(form.getEmail());
-		user.setPassword(form.getPassword());
-		user.setUserName(form.getUserName());
-		user.setBirthday(form.getBirthday());
-		user.setAge(form.getAge());
-		user.setMarriage(form.isMarriage());
+		User user = convertSignupFormToUser(form);
 		
 		try {
 		
@@ -287,15 +335,12 @@ public class HomeController{
 	public String getQuestionCreationForm(@ModelAttribute QuestionCreationForm form,Model model) {
 		
 		model.addAttribute("contents","login/questionCreation :: question_creation_contents");
-		
-		radioAnswered = initRadioAnswered();
-		radioResult = initRadioResult();
+		initializeAnsweredRadioMaps(model);
+		initializeResultRadioMaps(model);
 		
 		List<String>categoryList = questionService.groupByCategory();
 				
 		model.addAttribute("categoryList",categoryList);
-		model.addAttribute("radioAnswered",radioAnswered);
-		model.addAttribute("radioResult",radioResult);
 		
 		return "login/homeLayout";
 		
@@ -357,14 +402,15 @@ public class HomeController{
 			@PathVariable("id") Integer questionId) {
 		System.out.println("questionId="+ questionId);
 		// ::は<div th:fragment="questionDetail_contents">
-		radioAnswered = initRadioAnswered();
-		radioResult = initRadioResult();
-		List<String>categoryList = questionService.groupByCategory();
+
+		initializeAnsweredRadioMaps(model);
+		initializeResultRadioMaps(model);
 		
-		model.addAttribute("contents","login/questionDetail::questionDetail_contents");
-		model.addAttribute("radioAnswered",radioAnswered);
-		model.addAttribute("radioResult",radioResult);
+		List<String>categoryList = questionService.groupByCategory();
+		Collections.sort(categoryList);
 		model.addAttribute("categoryList",categoryList);
+		model.addAttribute("contents","login/questionDetail::questionDetail_contents");
+
 		if(questionId !=null && questionId > 0) {
 			Question question = questionService.selectOne(questionId);
 			form.setQuestionId(question.getQuestionId());
@@ -407,7 +453,7 @@ public class HomeController{
 		}catch(DataAccessException e) {
 			model.addAttribute("result","更新失敗(トランザクションテスト)");
 		}
-		return getQuestionList(model);
+		return getQuestionManagement(model);
 	}
 	
 	@PostMapping(value="/questionDetail",params="delete")
@@ -478,4 +524,5 @@ public class HomeController{
 		model.addAttribute("contents","login/admin::admin_contents");
 		return "login/homeLayout";
 	}
+	
 }
