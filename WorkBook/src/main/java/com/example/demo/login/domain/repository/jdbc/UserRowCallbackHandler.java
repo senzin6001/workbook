@@ -25,7 +25,6 @@ public class UserRowCallbackHandler implements RowCallbackHandler{
 						+rs.getString("user_name")+","
 						+rs.getString("birthday")+","
 						+rs.getString("age")+","
-						+rs.getString("marriage")+","
 						+rs.getString("role");
 				bw.write(str);
 				bw.newLine();

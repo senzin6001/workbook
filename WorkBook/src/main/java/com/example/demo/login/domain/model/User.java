@@ -15,6 +15,5 @@ public class User{
 	private String userName;
 	private LocalDate birthday; 
 	private int age;
-	private boolean marriage; 
 	private String role;
 }

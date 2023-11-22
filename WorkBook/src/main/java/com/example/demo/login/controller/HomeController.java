@@ -36,7 +36,6 @@ public class HomeController{
 	private final QuestionService questionService;
 	private final UserService userService;
 	
-	private Map<String,String> radioMarriage;
 	private Map<String,String> radioAnswered;
 	private Map<String,String> radioResult;
 	private Map<String,String> radioIncorrect;
@@ -46,22 +45,6 @@ public class HomeController{
         this.questionService = questionService;
         this.userService = userService;
         
-    }
-	
-	private Map<String,String> initRadioMarriage(){
-				
-		Map<String,String> radio =new LinkedHashMap<>();
-		
-		radio.put("既婚", "true");
-		radio.put("未婚", "false");
-		
-		return radio;
-		
-	}
-	
-    private void initializeMarriageRadioMaps(Model model) {
-        radioMarriage = initRadioMarriage();
-        model.addAttribute("radioMarriage", radioMarriage);
     }
 		
 	private Map<String,String> initRadioAnswered(){
@@ -79,6 +62,7 @@ public class HomeController{
         radioAnswered = initRadioAnswered();
         model.addAttribute("radioAnswered", radioAnswered);
     }
+    
 		
 	private Map<String,String> initRadioResult(){
 		
@@ -95,6 +79,7 @@ public class HomeController{
         radioResult = initRadioResult();
         model.addAttribute("radioResult", radioResult);
     }
+    
 		
 	private Map<String,String> initRadioIncorrect(){
 				
@@ -144,7 +129,6 @@ public class HomeController{
 		user.setUserName(form.getUserName());
 		user.setBirthday(form.getBirthday());
 		user.setAge(form.getAge());
-		user.setMarriage(form.isMarriage());
 		
 	    return user;  
 	    
@@ -278,7 +262,6 @@ public class HomeController{
 		// ::は<div th:fragment="userDetail_contents">
 		model.addAttribute("contents","login/userDetail::userDetail_contents");
 		
-		initializeMarriageRadioMaps(model);
 		
 		if(userId !=null && userId > 0) {
 			User user = userService.selectOne(userId);
@@ -287,7 +270,6 @@ public class HomeController{
 			form.setUserName(user.getUserName());
 			form.setBirthday(user.getBirthday());
 			form.setAge(user.getAge());
-			form.setMarriage(user.isMarriage());
 			model.addAttribute("signupForm",form);
 		}
 		return "login/homeLayout";
@@ -525,4 +507,5 @@ public class HomeController{
 		return "login/homeLayout";
 	}
 	
+
 }

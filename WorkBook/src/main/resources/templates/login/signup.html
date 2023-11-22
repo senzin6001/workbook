@@ -99,27 +99,6 @@
 							</div>
 						</td>
 					</tr>
-					<!--結婚ステータスの入力エリア -->
-					<tr>
-						<th class="active">結婚</th>
-						<td>
-							<div class="form-group">
-								<!--ラジオボタン-->
-								<div th:each="item:${radioMarriage}">
-									<input type="radio" name="radioMarriage"
-										th:text="${item.key}"
-										th:value="${item.value}"
-										th:field="*{marriage}">
-									</input>
-								</div>
-								<span class="text-danger"
-									th:if="${#fields.hasErrors('marriage')}"
-									th:errors="*{marriage}">
-									marriage error
-								</span>
-							</div>
-						</td>
-					</tr>
 				</table>
 				<ul>
 					<li th:each="error:${#fields.detailedErrors()}">

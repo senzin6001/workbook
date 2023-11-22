@@ -41,9 +41,8 @@ public class UserDaoJdbcImpl implements UserDao{
 				+"user_name,"
 				+"birthday,"
 				+"age,"
-				+"marriage,"
 				+"role)"
-				+"VALUES(?,?,?,?,?,?,?)";
+				+"VALUES(?,?,?,?,?,?)";
 		
 		int rowNumber = jdbc.update(sql,
 				user.getEmail(),
@@ -52,7 +51,6 @@ public class UserDaoJdbcImpl implements UserDao{
 				user.getUserName(),
 				user.getBirthday(),
 				user.getAge(),
-				user.isMarriage(),
 				user.getRole());
 		
 		return rowNumber;
@@ -94,8 +92,7 @@ public class UserDaoJdbcImpl implements UserDao{
 				+ " password=?,"
 				+ " user_name=?,"
 				+ " birthday=?,"
-				+ " age=?,"
-				+ " marriage=?"
+				+ " age=?"
 				+ " WHERE user_id=?";
 		int rowNumber = jdbc.update(sql,
 				user.getEmail(),
@@ -104,7 +101,6 @@ public class UserDaoJdbcImpl implements UserDao{
 				user.getUserName(),
 				user.getBirthday(),
 				user.getAge(),
-				user.isMarriage(),
 				user.getUserId());
 		
 		return rowNumber;
@@ -130,7 +126,6 @@ public class UserDaoJdbcImpl implements UserDao{
         user.setUserName((String) map.get("user_name"));
         user.setBirthday(((Date) map.get("birthday")).toLocalDate());
         user.setAge((Integer) map.get("age"));
-        user.setMarriage((Boolean) map.get("marriage"));
         user.setRole((String) map.get("role"));
         return user;
     }

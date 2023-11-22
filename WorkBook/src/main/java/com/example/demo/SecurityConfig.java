@@ -15,9 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import com.example.demo.login.RestMatcher;
 
 
 
@@ -88,10 +85,10 @@ public class SecurityConfig {
 	        // ログアウト時のセッション破棄を有効化
 	        .invalidateHttpSession(true));
     
-	    RequestMatcher csrfMatcher = new RestMatcher("/rest/**");
+//	    RequestMatcher csrfMatcher = new RestMatcher("/rest/**");
 	    
-	    http.csrf( csrf -> csrf
-	    		.requireCsrfProtectionMatcher(csrfMatcher));
+//	    http.csrf( csrf -> csrf
+//	    		.requireCsrfProtectionMatcher(csrfMatcher));
 	    
 //		http.csrf( csrf -> csrf
 //			.disable());

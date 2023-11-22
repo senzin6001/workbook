@@ -24,15 +24,12 @@ public interface UserMapper{
 			+ " user_name,"
 			+ " birthday,"
 			+ " age,"
-			+ " marriage,"
 			+ " role)"
 			+ " VALUES ("
 			+ " #{email},"
 			+ " #{password},"
 			+ " #{userName},"
-			+ " #{birthday},"
 			+ " #{age},"
-			+ " #{marriage},"
 			+ " #{role})")
 	public boolean insert(User user);
 	
@@ -42,7 +39,6 @@ public interface UserMapper{
 			+ "user_name AS userName,"
 			+ "birthday,"
 			+ "age,"
-			+ "marriage,"
 			+ "role"
 			+ " FROM m_user"
 			+ " WHERE user_id = #{userId}")
@@ -54,7 +50,6 @@ public interface UserMapper{
 			+ "user_name AS userName,"
 			+ "birthday,"
 			+ "age,"
-			+ "marriage,"
 			+ "role"
 			+ " FROM m_user"
 			+ " WHERE email = #{email}")
@@ -66,7 +61,6 @@ public interface UserMapper{
 			+"user_name AS userName,"
 			+"birthday,"
 			+"age,"
-			+"marriage,"
 			+"role"
 			+" FROM m_user")
 	public List<User> selectMany();
@@ -77,7 +71,6 @@ public interface UserMapper{
 			+" user_name = #{userName},"
 			+" birthday = #{birthday},"
 			+" age = #{age},"
-			+" marriage = #{marriage}"
 			+" WHERE user_id = #{userId}")
 	public boolean updateOne(User user);
 	

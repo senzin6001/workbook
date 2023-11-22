@@ -1,5 +1,9 @@
 package com.example.demo.login.domain.repository.jdbc;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.login.domain.model.Question;
 import com.example.demo.login.domain.repository.QuestionDao;
@@ -257,5 +262,30 @@ public class QuestionDaoJdbcImpl implements QuestionDao{
         return jdbc.queryForObject(sql, Integer.class);
     	
     }
+    
+    @Override
+    public String uploadQuestionFile(MultipartFile file) throws DataAccessException{
+    	try (BufferedReader br = new BufferedReader(new InputStreamReader(uploadFile.getInputStream(), StandardCharsets.UTF_8))){
+    	      String line;
+    	      while ((line = br.readLine()) != null) {
+    	        final String[] split = line.split(",");
+    	        Question question = new Question();
+                question.setCategory(split[1]);
+                question.setQuestionStatement(split[2]);
+                question.setChoice1(split[3]);
+                question.setChoice2(split[4]);
+                question.setChoice3(split[5]);
+                question.setChoice4(split[6]);
+                question.setAnswer(Integer.parseInt(split[6]));
+                question.setExplanation(split[7]);
+                question.setAnswered(split[8]);
+                question.setResult(split[9]);
+    	      }
+    	    } catch (IOException e) {
+    	      throw new RuntimeException("ファイルが読み込めません", e);
+    	    }
+
+    	    return "redirect:/";
+    	  }
 
 }

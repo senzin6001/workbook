@@ -19,8 +19,6 @@
 					<th class="info col-sm-2">ユーザ名</th>
 					<th class="info col-sm-2">誕生日</th>
 					<th class="info col-sm-2">年齢</th>
-					<th class="info col-sm-2">結婚</th>
-					<th class="info col-sm-2"></th>
 				</tr>
 				<tr th:each="user:${userList}">
 					<td th:text="${user.userId}"></td>
@@ -28,7 +26,6 @@
 					<td th:text="${user.userName}"></td>
 					<td th:text="${#temporals.format(user.birthday, 'yyyy-MM-dd')}"></td>
 					<td th:text="${user.age}"></td>
-					<td th:text="${user.marriage} ? '既婚':'未婚'"></td>
 					<td>
 						<a class="btn btn-primary" th:href="@{'/userDetail/'+${user.userId}}">
 							詳細

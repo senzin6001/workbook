@@ -1,10 +1,10 @@
 
 
-INSERT INTO m_user (email, password, user_name, birthday, age,marriage, role)
-VALUES('yamada@xxx.co.jp','{bcrypt}$2a$10$jr3A85H3Pm.RrMEK7nagx.G/OE3hwOnM75vLvAIGobTtaI9nDlWzm','山田太郎','1990-01-01',28,false,'ROLE_ADMIN');
+INSERT INTO m_user (email, password, user_name, birthday, age, role)
+VALUES('yamada@xxx.co.jp','{bcrypt}$2a$10$jr3A85H3Pm.RrMEK7nagx.G/OE3hwOnM75vLvAIGobTtaI9nDlWzm','山田太郎','1990-01-01',28,'ROLE_ADMIN');
 
-INSERT INTO m_user (email, password, user_name, birthday, age, marriage, role)
-VALUES('tamura@xxx.co.jp','{bcrypt}$2a$10$jr3A85H3Pm.RrMEK7nagx.G/OE3hwOnM75vLvAIGobTtaI9nDlWzm','田村達也','1986-11-05',31,false,'ROLE_GENERAL');
+INSERT INTO m_user (email, password, user_name, birthday, age, role)
+VALUES('tamura@xxx.co.jp','{bcrypt}$2a$10$jr3A85H3Pm.RrMEK7nagx.G/OE3hwOnM75vLvAIGobTtaI9nDlWzm','田村達也','1986-11-05',31,'ROLE_GENERAL');
 
 
 

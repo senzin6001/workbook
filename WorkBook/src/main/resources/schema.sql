@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS m_user (
 	user_name VARCHAR(50),
 	birthday DATE,
 	age INT,
-	marriage BOOLEAN,
 	role VARCHAR(50)
 );
 

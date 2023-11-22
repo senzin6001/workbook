@@ -1,8 +1,5 @@
 package com.example.demo.login.controller;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -27,17 +24,6 @@ import com.example.demo.login.domain.service.UserService;
 public class SignupController{
 	@Autowired
 	private UserService userService;
-
-	private Map<String,String> radioMarriage;
-	
-	private Map<String,String> initRadioMarriage(){
-		Map<String, String> radio = new LinkedHashMap<>();
-		
-		radio.put("既婚", "true");
-		radio.put("未婚", "false");
-		
-		return radio;
-	}
 	
 	private User convertSignupFormToUser(SignupForm form) {
 	    User user = new User();
@@ -46,15 +32,11 @@ public class SignupController{
 	    user.setUserName(form.getUserName());
 	    user.setBirthday(form.getBirthday());
 	    user.setAge(form.getAge());
-	    user.setMarriage(form.isMarriage());
 	    user.setRole("ROLE_GENERAL");
 	    return user;
 	}
 	@GetMapping("/signup")
 	public String getSignUp(@ModelAttribute SignupForm form,Model model) {
-		radioMarriage = initRadioMarriage();
-		
-		model.addAttribute("radioMarriage",radioMarriage);
 		return "login/signup";
 		
 	}

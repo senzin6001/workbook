@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -38,6 +37,4 @@ public class SignupForm{
 	@Min(value=20,groups = ValidGroup2.class)
 	@Max(value=100,groups = ValidGroup2.class)
 	private int age;
-	@AssertFalse(groups = ValidGroup2.class)
-	private boolean marriage;
 }

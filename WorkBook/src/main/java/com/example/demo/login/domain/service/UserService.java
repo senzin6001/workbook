@@ -32,7 +32,6 @@ public class UserService{
 	    }
 		return false;
 	}
-
 	
 	public boolean insert(User user) {
 		

@@ -31,14 +31,12 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 				+" user_name,"
 				+" birthday,"
 				+" age,"
-				+" marriage,"
 				+" role)"
 				+" VALUES(:email,"
 				+" :password,"
 				+" :userName,"
 				+" :birthday,"
 				+" :age,"
-				+" :marriage,"
 				+" :role)";
 		SqlParameterSource params = new MapSqlParameterSource()
 			.addValue("email",user.getEmail())
@@ -46,7 +44,6 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 			.addValue("userName",user.getUserName())
 			.addValue("birthday",user.getBirthday())
 			.addValue("age",user.getAge())
-			.addValue("marriage",user.isMarriage())
 			.addValue("role",user.getRole());
 		return jdbc.update(sql, params);
 				
@@ -63,7 +60,6 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 		user.setUserName((String)map.get("user_name"));
 		user.setBirthday(((Date) map.get("birthday")).toLocalDate());
 		user.setAge((Integer)map.get("age"));
-		user.setMarriage((Boolean)map.get("marriage"));
 		user.setRole((String)map.get("role"));
 		return user;
 		
@@ -81,7 +77,6 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 			user.setUserName((String)map.get("user_name"));
 			user.setBirthday(((Date) map.get("birthday")).toLocalDate());
 			user.setAge((Integer)map.get("age"));
-			user.setMarriage((Boolean)map.get("marriage"));
 			user.setRole((String)map.get("role"));
 			return user;
 	    } catch (EmptyResultDataAccessException e) {
@@ -103,7 +98,6 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 			user.setUserName((String)map.get("user_name"));
 			user.setBirthday(((Date) map.get("birthday")).toLocalDate());
 			user.setAge((Integer)map.get("age"));
-			user.setMarriage((Boolean)map.get("marriage"));
 			user.setRole((String)map.get("role"));
 			
 			userList.add(user);
@@ -120,8 +114,7 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 				+ " password = :password,"
 				+ " user_name = :userName,"
 				+ " birthday = :birthday,"
-				+ " age = :age,"
-				+ " marriage = :marriage"
+				+ " age = :age"
 				+ " WHERE user_id = :userId";
 		SqlParameterSource params = new MapSqlParameterSource()
 				.addValue("userId",user.getUserId())
@@ -129,8 +122,7 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 				.addValue("password",user.getPassword())
 				.addValue("userName",user.getUserName())
 				.addValue("birthday",user.getBirthday())
-				.addValue("age",user.getAge())
-				.addValue("marriage",user.isMarriage());
+				.addValue("age",user.getAge());
 			return jdbc.update(sql, params);
 				
 	}
