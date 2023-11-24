@@ -129,4 +129,6 @@ public class UserDaoJdbcImpl implements UserDao{
         user.setRole((String) map.get("role"));
         return user;
     }
+    
+
 }

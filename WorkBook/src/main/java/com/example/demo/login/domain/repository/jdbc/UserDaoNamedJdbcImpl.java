@@ -134,11 +134,12 @@ public class UserDaoNamedJdbcImpl implements UserDao{
 		int rowNumber = jdbc.update(sql, params);
 		return rowNumber;
 	}
-	
+	@Override
 	public void userCsvOut() {
 		String sql = "SELECT * FROM m_user";
-		QuestionRowCallbackHandler handler = new QuestionRowCallbackHandler();
+		UserRowCallbackHandler handler = new UserRowCallbackHandler();
 		jdbc.query(sql, handler);
-	}
+	}	
+
 }
 

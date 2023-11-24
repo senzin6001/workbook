@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.login.domain.model.GroupOrder;
 import com.example.demo.login.domain.model.Question;
@@ -471,6 +472,17 @@ public class HomeController{
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
 	
+	@PostMapping("/uploadUserList/csv")
+    public String uploadUserListCsv(@RequestParam("file") MultipartFile uploadFile) throws DataAccessException{
+    	List<User> newUserList = new ArrayList<>();
+    	newUserList = userService.convertCSVToUserList(uploadFile);
+    	for(User user : newUserList) {
+    		userService.insert(user);
+    	}
+    	
+    	return "redirect:/userManagement";
+	}
+	
 	@GetMapping("/questionList/csv")
 	public ResponseEntity<byte[]> getQuestionListCsv(Model model) {
 		
@@ -486,7 +498,8 @@ public class HomeController{
 		header.setContentDispositionFormData("filename", "question_list.csv");
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
-	@GetMapping("/questionManagement/csv")
+	
+	@GetMapping("/downloadQuestion/csv")
 	public ResponseEntity<byte[]> getQuestionManagementCsv(Model model) {
 		
 		questionService.questionCsvOut();
@@ -501,6 +514,18 @@ public class HomeController{
 		header.setContentDispositionFormData("filename", "question_list.csv");
 		return new ResponseEntity<>(bytes,header,HttpStatus.OK);
 	}
+	
+	@PostMapping("/uploadQuestion/csv")
+    public String uploadQuestionCsv(@RequestParam("file") MultipartFile uploadFile) throws DataAccessException{
+    	List<Question> newQuestionList = new ArrayList<>();
+    	newQuestionList = questionService.convertCSVToQuestion(uploadFile);
+    	for(Question question : newQuestionList) {
+    		questionService.insert(question);
+    	}
+    	
+    	return "redirect:/questionManagement";
+	}
+	
 	@GetMapping("/admin")
 	public String getAdmin(Model model) {
 		model.addAttribute("contents","login/admin::admin_contents");
@@ -508,4 +533,5 @@ public class HomeController{
 	}
 	
 
+	
 }

@@ -48,11 +48,11 @@
 			<label th:text="'合計: '+${questionManagementCount}+'件'"></label><br/>
 			<label class="text-info" th:text="${result}">結果表示</label><br/>
 			<a class="btn btn-primary" th:href="@{'/downloadQuestion/csv'}">CSV出力</a>
-				<form method="post" action="/uploadQuestion/csv" enctype="multipart/form-data">
-			        <input type="file" name="file">
-			        <input type="submit" name="uploadQuestionCsvList" value="ファイルをアップロード">
-					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-				</form>
+			<form method="post" action="/uploadQuestion/csv" enctype="multipart/form-data">
+		        <input type="file" name="file">
+		        <input type="submit" name="uploadQuestionCsvList" value="ファイルをアップロード">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			</form>
 			<button type="button" class="btn btn-primary btn-lg pull-right" onclick="location.href='/admin'">
 				戻る
 			</button>

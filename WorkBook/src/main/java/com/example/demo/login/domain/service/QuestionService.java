@@ -1,6 +1,9 @@
 package com.example.demo.login.domain.service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.login.domain.model.Question;
 import com.example.demo.login.domain.repository.QuestionDao;
@@ -227,5 +231,35 @@ public class QuestionService{
     public int countCorrectAnswer() {
     	return dao.countCorrectAnswer();
     }
+     
+    public List<Question> convertCSVToQuestion(MultipartFile file) throws DataAccessException{
+    	List<Question> newQuestionList = new ArrayList<>();
+    	try (
+    		BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))){
+    		String line;
+    		while ((line = br.readLine()) != null) {
+    			final String[] split = line.split(","); 			
+    	        Question question = new Question();
+                question.setCategory(split[0]);
+                question.setQuestionStatement(split[1]);
+                question.setChoice1(split[2]);
+                question.setChoice2(split[3]);
+                question.setChoice3(split[4]);
+                question.setChoice4(split[5]);
+                question.setAnswer(Integer.parseInt(split[6]));
+                question.setExplanation(split[7]);
+                question.setAnswered(Boolean.parseBoolean(split[8]));
+                question.setResult(Boolean.parseBoolean(split[9]));
+                newQuestionList.add(question);
+                
+    		}
+    	} catch (IOException e) {
+    	      throw new RuntimeException("ファイルが読み込めません", e);
+    	}
+    	
+    	return newQuestionList;
+	}
+    
+
 }
 
